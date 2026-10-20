@@ -1,0 +1,6 @@
+@"
+*.db
+*.db-*
+.env
+*.exe
+"@ | Out-File -Encoding ascii .gitignore
