@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoundWave</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Left sidebar: brand, navigation, user picker, service status -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="brand-name">SoundWave</span>
+      </div>
+
+      <nav class="nav" aria-label="Main">
+        <button class="nav-item active" data-view="home">Home</button>
+        <button class="nav-item" data-view="charts">Top charts</button>
+        <button class="nav-item" data-view="playlists">Your playlists</button>
+      </nav>
+
+      <div class="sidebar-block">
+        <label class="sidebar-label" for="user-select">Listening as</label>
+        <select id="user-select" class="user-select">
+          <option value="u1">Listener u1</option>
+          <option value="u2">Listener u2</option>
+        </select>
+      </div>
+
+      <div class="sidebar-block">
+        <p class="sidebar-label">Services</p>
+        <ul class="service-list" id="service-list">
+          <li data-port="8081"><span class="dot"></span>Playback</li>
+          <li data-port="8082"><span class="dot"></span>Analytics</li>
+          <li data-port="8083"><span class="dot"></span>Playlist</li>
+          <li data-port="8084"><span class="dot"></span>Notification</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main content area: one view is visible at a time -->
+    <main class="main">
+
+      <!-- Home view -->
+      <section class="view active" id="view-home">
+        <header class="hero">
+          <h1 class="hero-title" id="greeting">Good evening</h1>
+          <p class="hero-sub">Pick a track to play. Every play is sent to the Playback service and flows through RabbitMQ to Analytics and Playlist.</p>
+        </header>
+
+        <h2 class="section-title">Tracks</h2>
+        <div class="track-grid" id="track-grid"></div>
+
+        <h2 class="section-title">Recently played</h2>
+        <ol class="track-list" id="recent-list"></ol>
+      </section>
+
+      <!-- Top charts view -->
+      <section class="view" id="view-charts">
+        <header class="hero">
+          <h1 class="hero-title">Top charts</h1>
+          <p class="hero-sub">Play counts from the Analytics service. Every fifth play of a track triggers a milestone notification.</p>
+        </header>
+        <ol class="chart-list" id="chart-list"></ol>
+      </section>
+
+      <!-- Playlists view -->
+      <section class="view" id="view-playlists">
+        <header class="hero">
+          <h1 class="hero-title">Your playlists</h1>
+          <p class="hero-sub">Create a playlist and add tracks to it. Creating a playlist sends a notification.</p>
+        </header>
+
+        <form class="create-form" id="create-playlist-form">
+          <input type="text" id="playlist-name" class="text-input" placeholder="Name your playlist" maxlength="60" required>
+          <button type="submit" class="btn btn-primary">Create playlist</button>
+        </form>
+
+        <div class="playlist-layout">
+          <ul class="playlist-list" id="playlist-list"></ul>
+          <div class="playlist-detail" id="playlist-detail"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right panel: notifications and live event activity -->
+    <aside class="side-panel">
+      <section class="panel-block">
+        <h2 class="panel-title">Notifications <span class="badge" id="notif-count">0</span></h2>
+        <ul class="notif-list" id="notif-list"></ul>
+      </section>
+
+      <section class="panel-block">
+        <h2 class="panel-title">Live activity <span class="live-dot" aria-hidden="true"></span></h2>
+        <ul class="activity-list" id="activity-list"></ul>
+      </section>
+    </aside>
+
+    <!-- Bottom now playing bar -->
+    <footer class="player" id="player">
+      <div class="player-track">
+        <div class="player-art" id="player-art"></div>
+        <div>
+          <p class="player-title" id="player-title">Nothing playing</p>
+          <p class="player-artist" id="player-artist">Choose a track to start</p>
+        </div>
+      </div>
+      <div class="wave" id="wave" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="player-meta">
+        <span class="player-plays" id="player-plays"></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Dialog for choosing a playlist when adding a track -->
+  <dialog class="dialog" id="add-dialog">
+    <form method="dialog" class="dialog-body">
+      <h2 class="dialog-title">Add to playlist</h2>
+      <p class="dialog-sub" id="add-dialog-track"></p>
+      <ul class="dialog-list" id="add-dialog-list"></ul>
+      <button class="btn btn-ghost" value="cancel">Cancel</button>
+    </form>
+  </dialog>
+
+  <!-- Toast messages for success and failure -->
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
